@@ -66,8 +66,6 @@ int main(int argc, char** argv)
 	print_list(head);
 	printf("Deleted List!\n");
 	deleteList(&head);
-	getchar();
-	
 }
 
 
