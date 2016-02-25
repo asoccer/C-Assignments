@@ -31,71 +31,87 @@ void message()
 	printf("%s\n",message);
 }
 
-int Game(double bankroll)//Return winnings
+int Game(double *bankroll)//Return winnings
 {
-	int choice,double_bet;
-	double bet = bet_func(&bankroll);
+	double bet = bet_func(&(*bankroll));
 	double winnings = 0;
-	int point;
-	char a;
+	int point,choice,double_bet;
 	int result;//1 True 0 False
 	printf("Would you like to bet for yourself or against?\nChoose 1 for yourself or 2 for against\t");
 	scanf("%d",&choice);
-	int dice_val = die_roll();
-	printf("The total value of the die roll is %d\n",dice_val);
-	switch(dice_val)
+	while(1)
 	{
-		case 2: case 3: case 12:
-			if(choice == 1)
-			{
-				printf("You have lost the game.\n");
-				result = 0;
-			}
-			break;
-		case 7: case 11:
-			if(choice == 1)
-			{
-				printf("You have won the game.\n");
-				result = 1;
-			}
-			break;
-		default:
-			point = dice_val;
-			printf("You will need to roll again. Press any button to continue\n");
-			getchar();
-			if(choice ==1)
-			{
-				printf("Would you like to double your bet?\nYes = 1\tNo = 0");
-				scanf("%d",&double_bet);
-				if(double_bet==1)
+		printf("Press enter to roll!\n");
+		getch();
+		int dice_val = die_roll();
+		printf("The total value of the die roll is %d\n",dice_val);
+		switch(dice_val)
+		{
+			case 2: case 3: case 12:
+				if(choice == 1)
 				{
-					bankroll-=bet;
-					bet*=2;
+					printf("You have lost the game.\n");
+					result = 0;
 				}
-				printf("The current bet on the table is %.02lf",bet);
-				dice_val = die_roll();
-				for(;;)
+				break;
+			case 7: case 11:
+				if(choice == 1)
 				{
-					printf("The total value of the die roll is %d\n",dice_val);
-					printf("Your point value is: %d",point);
-					dice_val=die_roll();
-					if(dice_val==7||dice_val==11||dice_val==point)
+					printf("You have won the game.\n");
+					result = 1;
+				}
+				break;
+			default:
+				point = dice_val;
+				printf("You will need to roll again. Press any button to continue\n");
+				getchar();
+				if(choice ==1)
+				{
+					printf("Would you like to double your bet?\nYes = 1\tNo = 0\t");
+					scanf("%d",&double_bet);
+					if(double_bet==1)
 					{
-						break;
+						(*bankroll)-=bet;
+						bet*=2;
 					}
-					printf("Press enter to roll again\n");
-					fgets(a,)
+					printf("The current bet on the table is %.02lf\n",bet);
+					dice_val=0;
+					for(;;)
+					{
+						printf("Press enter to roll again\n");
+						getch();
+						dice_val=die_roll();
+						printf("The total value of the die roll is %d\n",dice_val);
+						printf("Your point value is: %d\n",point);
+						if(dice_val==7||dice_val==11||dice_val==point)
+						{
+							break;
+						}
+					}
+					if(dice_val==7||dice_val==11)
+					{
+						result=0;
+					}
+					else if(dice_val==point)
+					{
+						result=1;
+					}
 
+				break;
 				}
-			}
-	}
-	switch(result)
-	{
-		case 1:
-			printf("You have won the following\t$%.2lf\n",bet);
-			winnings+=(bet*2);
-		case 0:
-			printf("You have lost the following\t$%.2lf\n",bet);
+
+		}
+
+		switch(result)
+		{
+			case 1:
+				printf("You have won the following\t$%.2lf\n",bet);
+				winnings+=(bet*2);
+				return winnings;
+			case 0:
+				printf("You have lost the following\t$%.2lf\n",bet);
+				return winnings;
+		}
 	}
 	return winnings;
 }
@@ -106,7 +122,8 @@ void main()
 	srand(time(NULL));
 	double winnings;
 	double bankroll = 100;
-	winnings = Game(bankroll);
-	printf("Winnings = %.2lf",winnings);
+	winnings = Game(&bankroll);
+	bankroll+=winnings;
+	printf("Winnings = %.02lf\t Bankroll = %.02lf",winnings,bankroll);
 
 }
