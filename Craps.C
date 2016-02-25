@@ -1,139 +1,112 @@
-//As the title suggest this is a WIP of Craps.
-
 #include <stdio.h>
-#include <stdlib.h>
-
-void bet_path(int *choice)
-{
-	
-	printf("-------------------------------------------\n");
-	printf("Pass Line: 1\nDon't pass Line: 2\n");
-	scanf("%d",&(*choice));
-	printf("-------------------------------------------\n");
-}
-
-void introduction()
-{
-	printf("-------------------------------------------\n");
-	printf("Welcome to the game of Crabs, please begin by\n");
-	printf("entering a seed for the random number generator\n");
-	printf("Seed\t");
-}
-
+#include <time.h>
 int die_roll()
 {
-	char choice;
 	int die_1,die_2;
-	printf("Would you like to roll the dice? Y or N?: ");
-	scanf(" %c",&choice);
-	if(choice == 'Y' || choice == 'y')
+	printf("Rolling the dice!!!!\n");
+	die_1 = (rand()%6) + 1;
+	die_2 = (rand()%6) + 1;
+	printf("Dice 1: \t%d \nDice 2: \t%d\n",die_1,die_2);	
+	return (die_1 + die_2);	
+}
+
+double bet_func(double *bankroll)
+{
+	double bet;
+	printf("How much would you like to bet?\n$");
+	scanf("%lf",&bet);
+	while(bet<5)
 	{
-		printf("\n\nRolling the dice!!!!\n");
-		die_1 = (rand()%6) + 1;
-		die_2 = (rand()%6) + 1;
-		printf("Dice 1: \t%d \nDice 2: \t%d\n",die_1,die_2);	
-		printf("-------------------------------------------\n");
-		return (die_1 + die_2);
+		printf("Your bet must be above $5.00, please enter again\n");
+		scanf("%lf",&bet);
 	}
-	else{
-		printf("Dice will not roll\n");
-		return 0;
-	}
-	
+	printf("Your current bet is %.02lf\n",bet);
+	(*bankroll)-=bet;
+	return bet;
 }
 
-void print_sum(int sum)
+void message()
 {
-	if (sum ==0){
-		printf("No Sum available to print\n");
-		return;
-	}
-	printf("The Sum of the dice is %d\n",sum);
+	char message[] = "Welcome to the game of Craps! Let's get this show on the road!";
+	printf("%s\n",message);
 }
 
-double bet(double *bankroll)
+int Game(double bankroll)//Return winnings
 {
-	double bet_value;
-	printf("How much would you like to bet? (Min of $5.00 is required\n\n$");
-	scanf("%lf",&bet_value);
-	printf("-------------------------------------------\n");
-	return bet_value;
-}
-
-void double_question(double *current_bet)
-{
-	char c;
-	printf("Would you like to double/press your bet? Y or N\t");
-	scanf(" %c",&c);
-	if(c == 'Y' ||c == 'y')
-	{
-		(*current_bet) = (double)((*current_bet)*2);
-	}
-	return;
-}
-void Pass_Line(int sum_die,double *bankroll,double *current_bet)
-{
+	int choice,double_bet;
+	double bet = bet_func(&bankroll);
+	double winnings = 0;
 	int point;
-	(*current_bet) = bet(&(*bankroll));
-	sum_die = die_roll();
-	switch(sum_die)
+	char a;
+	int result;//1 True 0 False
+	printf("Would you like to bet for yourself or against?\nChoose 1 for yourself or 2 for against\t");
+	scanf("%d",&choice);
+	int dice_val = die_roll();
+	printf("The total value of the die roll is %d\n",dice_val);
+	switch(dice_val)
 	{
-		case 7:case 11:
-			printf("Congrats!! You just won %.2f\n",*current_bet);
-			(*bankroll) = (double)((*bankroll)+(*current_bet));
-			break;
 		case 2: case 3: case 12:
-			printf("Sadly you lost %.2f\n!",*current_bet);
-			(*bankroll) = (double)((*bankroll)-(*current_bet));
-			break;
-		//case 4:case 5:case 6:case 8:case 9:case 10:
-		default:
-			double_question(&(*current_bet));
-			printf("Your current bet is %.2f\n",(*current_bet));
-			point = sum_die;
-			sum_die = 0;
-			printf("Your point is %d\n",point);
-			printf("Let us now continue, we shall now roll again\n");
-			sum_die = die_roll();
-			while(1)
+			if(choice == 1)
 			{
-				if(sum_die==point)
+				printf("You have lost the game.\n");
+				result = 0;
+			}
+			break;
+		case 7: case 11:
+			if(choice == 1)
+			{
+				printf("You have won the game.\n");
+				result = 1;
+			}
+			break;
+		default:
+			point = dice_val;
+			printf("You will need to roll again. Press any button to continue\n");
+			getchar();
+			if(choice ==1)
+			{
+				printf("Would you like to double your bet?\nYes = 1\tNo = 0");
+				scanf("%d",&double_bet);
+				if(double_bet==1)
 				{
-					printf("You have just won %.2f!!!!\n",(*current_bet));
-					(*bankroll) = (double)((*bankroll)+(*current_bet));
-					break;
+					bankroll-=bet;
+					bet*=2;
 				}
-				else if(sum_die == 7)
+				printf("The current bet on the table is %.02lf",bet);
+				dice_val = die_roll();
+				for(;;)
 				{
-					printf("You've seven-out, the following will be deducted %.2f\n",(*current_bet));
-					(*bankroll) = (double)((*bankroll)-(*current_bet));
-					break;
+					printf("The total value of the die roll is %d\n",dice_val);
+					printf("Your point value is: %d",point);
+					dice_val=die_roll();
+					if(dice_val==7||dice_val==11||dice_val==point)
+					{
+						break;
+					}
+					printf("Press enter to roll again\n");
+					fgets(a,)
+
 				}
-				else
-					sum_die = die_roll();
-					printf("Reminder, your point is %d\n",point);
 			}
 	}
+	switch(result)
+	{
+		case 1:
+			printf("You have won the following\t$%.2lf\n",bet);
+			winnings+=(bet*2);
+		case 0:
+			printf("You have lost the following\t$%.2lf\n",bet);
+	}
+	return winnings;
 }
 
 void main()
 {
-	int choice,sum_die,seed;
-	char c;
-	introduction();
-	double bankroll = 100.00,current_bet,winnings=0;
-	scanf("%d",&seed);
-	srand(seed);
-	bet_path(&choice);
-	printf("Bets have been set! Let's play some craps!!\n");
-	
-	while(1){
-		if(choice == 1){Pass_Line(sum_die,&winnings,&current_bet);}
-		printf("Would you like to continue? Your current winnings are %.2f\n",winnings);
-		scanf(" %c",&c);
-		if(c == 'N'||c =='n'){break;}
+	message();
+	srand(time(NULL));
+	double winnings;
+	double bankroll = 100;
+	winnings = Game(bankroll);
+	printf("Winnings = %.2lf",winnings);
 
-	}
-	bankroll = (double)(bankroll+winnings);
-	printf("My bankroll is %.2f",bankroll);
 }
