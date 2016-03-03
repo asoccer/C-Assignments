@@ -2,6 +2,11 @@
 #include <time.h>
 #include <stdlib.h>
 //Adam A Dost JAPA340 03/03/2016
+
+void display_info()
+{
+	printf("This project was made by Adam A Dost for my Japanese 340 class.\n");
+}
 void bank_problems()
 {
 	printf("\n----------------------------------------------------------------------------------------------\n");
@@ -130,6 +135,7 @@ void results(double noriko,int winnings)
 }
 void main()
 {
+	display_info();
 	char name[50];
 	int choice,winnings;
 	srand(time(NULL));
